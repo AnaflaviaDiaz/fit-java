@@ -55,6 +55,34 @@ public class ClientDAO implements IClientDAO{
 
     @Override
     public boolean getClientById(Client client) {
+        PreparedStatement preparedStatement;
+        ResultSet resultSet;
+        var connection =  Conexion.getConnection();
+        var sql = "SELECT * FROM client WHERE id = ?";
+
+        try  {
+            preparedStatement=connection.prepareStatement(sql);
+            // id=> numero, parametro se representa con ? de la sentencia sql
+            preparedStatement.setInt(1, client.getId());
+            resultSet = preparedStatement.executeQuery();
+
+            // solo deberia devolver 1 o ninguno
+            if (resultSet.next()) {
+                client.setName(resultSet.getString("name"));
+                client.setLastname(resultSet.getString("lastname"));
+                client.setName(resultSet.getString("membership"));
+
+                return  true;
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }  finally {
+            try{
+                connection.close();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
         return false;
     }
 
@@ -74,11 +102,18 @@ public class ClientDAO implements IClientDAO{
     }
 
     static void main() {
-        //listarclientes
-        System.out.println("***Listar clientes***");
         IClientDAO clientDAO = new ClientDAO();
 
-        var clients = clientDAO.getClients();
-        clients.forEach(System.out::println);
+        // listar clientes
+        // System.out.println("***Listar clientes***");
+        // var clients = clientDAO.getClients();
+        // clients.forEach(System.out::println);
+
+        // buscar por id
+        var client = new Client(3);
+        System.out.println("***Buscar por  id***");
+        var clientFound = clientDAO.getClientById(client);
+        if(clientFound) System.out.println("Cliente encontrado:"+client);
+        else System.out.println("No se encontró cliente");
     }
 }
