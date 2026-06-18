@@ -88,7 +88,28 @@ public class ClientDAO implements IClientDAO{
 
     @Override
     public boolean addClient(Client client) {
-        return false;
+        PreparedStatement preparedStatement;
+        Connection connection = Conexion.getConnection();
+        final String sql = "INSERT INTO client(name, lastname, membership) "
+                + " VALUES(?, ?, ?)";
+
+        try {
+            preparedStatement=connection.prepareStatement(sql);
+            // no se empieza de 0, estos elementos completan los "?"
+            preparedStatement.setString(1,client.getName());
+            preparedStatement.setString(2,client.getLastname());
+            preparedStatement.setInt(3,client.getMembership());
+            preparedStatement.execute();
+            return true;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     @Override
@@ -104,16 +125,25 @@ public class ClientDAO implements IClientDAO{
     static void main() {
         IClientDAO clientDAO = new ClientDAO();
 
-        // listar clientes
-        // System.out.println("***Listar clientes***");
-        // var clients = clientDAO.getClients();
-        // clients.forEach(System.out::println);
-
         // buscar por id
-        var client = new Client(3);
-        System.out.println("***Buscar por  id***");
-        var clientFound = clientDAO.getClientById(client);
-        if(clientFound) System.out.println("Cliente encontrado:"+client);
-        else System.out.println("No se encontró cliente");
+        // var client = new Client(3);
+        // System.out.println("***Buscar por  id***");
+        // var clientFound = clientDAO.getClientById(client);
+        // if(clientFound) System.out.println("Cliente encontrado:"+client);
+        // else System.out.println("No se encontró cliente");
+
+        // agregar client
+        var newClient = new Client("Carol", "Real", 400);
+        var isAdded = clientDAO.addClient(newClient);
+        if (isAdded) {
+            System.out.println("Se agregó nuevo cliente: " + newClient);
+        } else {
+            System.out.println("No se puedo agregar el usuario: " + newClient);
+        }
+
+        // listar clientes
+         System.out.println("***Listar clientes***");
+         var clients = clientDAO.getClients();
+         clients.forEach(System.out::println);
     }
 }
