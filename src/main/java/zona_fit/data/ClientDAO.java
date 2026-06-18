@@ -145,7 +145,25 @@ public class ClientDAO implements IClientDAO{
 
     @Override
     public boolean deleteClient(Client client) {
-        return false;
+        PreparedStatement preparedStatement;
+        Connection connection = Conexion.getConnection();
+        final String sql = "DELETE FROM client WHERE id = ?";
+
+        try {
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, client.getId());
+            preparedStatement.execute();
+
+            return true;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     static void main() {
@@ -168,12 +186,21 @@ public class ClientDAO implements IClientDAO{
         // }
 
         // actualizar cliente
-        var clientEdited = new Client(5, "Danilleo", "Ortiz", 300);
-        var isModified = clientDAO.updateClient(clientEdited);
-        if (isModified) {
-            System.out.println("Datos de cliente actualizados: " + clientEdited);
+        // var clientEdited = new Client(5, "Danilleo", "Ortiz", 300);
+        // var isModified = clientDAO.updateClient(clientEdited);
+        // if (isModified) {
+        //     System.out.println("Datos de cliente actualizados: " + clientEdited);
+        // } else {
+        //     System.out.println("No se pudo actualizar el cliente " + clientEdited);
+        // }
+
+        // eliminar cliente
+        var clientToDelete = new Client(5);
+        var isDeleted = clientDAO.deleteClient(clientToDelete);
+        if (isDeleted) {
+            System.out.println("El cliente ha sido eliminado " + clientToDelete);
         } else {
-            System.out.println("No se pudo actualizar el cliente " + clientEdited);
+            System.out.println("No se pudo eliminar el cliente: " + clientToDelete);
         }
 
         // listar clientes
