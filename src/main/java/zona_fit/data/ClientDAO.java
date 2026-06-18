@@ -114,7 +114,33 @@ public class ClientDAO implements IClientDAO{
 
     @Override
     public boolean updateClient(Client client) {
-        return false;
+        PreparedStatement preparedStatement;
+        Connection connection = Conexion.getConnection();
+        // los simbolos "?" son parametros posicionales
+        final String sql = "UPDATE client SET name=?, lastname=?, membership=? "
+                + " WHERE id= ?";
+
+        try {
+            preparedStatement = connection.prepareStatement(sql);
+            // sustituir con los parametros posicionales
+            preparedStatement.setString(1, client.getName());
+            preparedStatement.setString(2, client.getLastname());
+            preparedStatement.setInt(3, client.getMembership());
+            preparedStatement.setInt(4, client.getId());
+
+            // ejecutar la sentencia
+            preparedStatement.execute();
+
+            return true;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     @Override
@@ -133,12 +159,21 @@ public class ClientDAO implements IClientDAO{
         // else System.out.println("No se encontró cliente");
 
         // agregar client
-        var newClient = new Client("Carol", "Real", 400);
-        var isAdded = clientDAO.addClient(newClient);
-        if (isAdded) {
-            System.out.println("Se agregó nuevo cliente: " + newClient);
+        // var newClient = new Client("Carol", "Real", 400);
+        // var isAdded = clientDAO.addClient(newClient);
+        // if (isAdded) {
+        //     System.out.println("Se agregó nuevo cliente: " + newClient);
+        // } else {
+        //     System.out.println("No se puedo agregar el usuario: " + newClient);
+        // }
+
+        // actualizar cliente
+        var clientEdited = new Client(5, "Danilleo", "Ortiz", 300);
+        var isModified = clientDAO.updateClient(clientEdited);
+        if (isModified) {
+            System.out.println("Datos de cliente actualizados: " + clientEdited);
         } else {
-            System.out.println("No se puedo agregar el usuario: " + newClient);
+            System.out.println("No se pudo actualizar el cliente " + clientEdited);
         }
 
         // listar clientes
