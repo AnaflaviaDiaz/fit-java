@@ -195,13 +195,13 @@ public class ClientDAO implements IClientDAO{
         // }
 
         // eliminar cliente
-        var clientToDelete = new Client(5);
-        var isDeleted = clientDAO.deleteClient(clientToDelete);
-        if (isDeleted) {
-            System.out.println("El cliente ha sido eliminado " + clientToDelete);
-        } else {
-            System.out.println("No se pudo eliminar el cliente: " + clientToDelete);
-        }
+        // var clientToDelete = new Client(5);
+        // var isDeleted = clientDAO.deleteClient(clientToDelete);
+        // if (isDeleted) {
+        //     System.out.println("El cliente ha sido eliminado " + clientToDelete);
+        // } else {
+        //     System.out.println("No se pudo eliminar el cliente: " + clientToDelete);
+        // }
 
         // listar clientes
          System.out.println("***Listar clientes***");
